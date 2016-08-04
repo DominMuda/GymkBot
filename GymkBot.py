@@ -21,7 +21,7 @@ config = configparser.ConfigParser()
 config.read("config.ini")
 
 token = config['Bot']['token']
-chat_id = config['Admin']['chat_id']
+admin_id = config['Admin']['chat_id']
 bot = telebot.TeleBot(token, skip_pending=True)
 
 def create_DB():
@@ -108,7 +108,7 @@ def main():
 			downloaded_file = bot.download_file(file_info.file_path)
 			thing = io.BytesIO(downloaded_file)
 			thing.name = raw + "png"
-			bot.send_photo(chat_id, thing)
+			bot.send_photo(admin_id, thing)
 
 	@bot.message_handler(content_types=['voice'])
 	def audio(*mensaje):
@@ -128,7 +128,7 @@ def main():
 			downloaded_file = bot.download_file(file_info.file_path)
 			thing = io.BytesIO(downloaded_file)
 			thing.name = raw + "ogg"
-			bot.send_voice(chat_id, thing)
+			bot.send_voice(admin_id, thing)
 
 	@bot.message_handler(func=lambda m: True)
 	def save_on_log(message):
