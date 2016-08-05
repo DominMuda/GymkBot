@@ -134,7 +134,7 @@ def main():
 	def save_on_log(message):
 		f = open('log','a')
 		now = datetime.now()
-		f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second) + message.chat.username + " dijo " + message.text + "\n")
+		f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second) + message.chat.username + " dijo: " + message.text + "\n")
 		f.close
 
 	bot.polling()
