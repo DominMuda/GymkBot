@@ -67,16 +67,16 @@ def main():
 		f.close
 		bot.send_message(message.chat.id, reply)
 
-		@bot.message_handler(commands=['prueba1'])
-		def send_help(message):
-			reply = "De momento, no has cumplimentado ninguna prueba: \n"
-			f = open('log','a')
-			now = datetime.now()
-			f.writelines("***************\n")
-			f.writelines("[%s/%s/%s - %s:%s:%s] /start\n" % (now.day, now.month, now.year, now.hour, now.minute, now.second) )
-			f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second) + reply + "\n")
-			f.close
-			bot.send_message(message.chat.id, reply)
+	@bot.message_handler(commands=['prueba1'])
+	def send_help(message):
+		reply = "Me alegra que hayas empezado a jugar! La primera prueba es simple. Será : \n"
+		f = open('log','a')
+		now = datetime.now()
+		f.writelines("***************\n")
+		f.writelines("[%s/%s/%s - %s:%s:%s] /prueba1\n" % (now.day, now.month, now.year, now.hour, now.minute, now.second) )
+		f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second) + reply + "\n")
+		f.close
+		bot.send_message(message.chat.id, reply)
 
 	@bot.message_handler(commands=['progreso'])
 	def send_help(message):
@@ -134,7 +134,7 @@ def main():
 	def save_on_log(message):
 		f = open('log','a')
 		now = datetime.now()
-		f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second) + message.text + "\n")
+		f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second) + message.chat.username + " dijo " + message.text + "\n")
 		f.close
 
 	bot.polling()
