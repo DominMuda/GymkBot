@@ -47,7 +47,7 @@ def main():
 		tmp_list = ""
 		for x in range(0,10):
 			tmp_list += "\n - " + str(pruebas_disponibles[x])
-		reply = "Los comandos que puedes usar son: \n" + tmp_list
+		reply = "Los comandos que puedes usar son: \n" + tmp_list + "\nSi necesitas saber las reglas de la gymkana, pulsa en /reglas"
 		f = open('log','a')
 		now = datetime.now()
 		f.writelines("***************\n")
@@ -55,6 +55,19 @@ def main():
 		f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second) + reply + "\n")
 		f.close
 		bot.send_message(message.chat.id, reply)
+
+	@bot.message_handler(commands=['reglas'])
+	def send_help(message):
+		tmp_list = ""
+		for x in range(0,10):
+			tmp_list += "\n - " + str(pruebas_disponibles[x])
+		f = open('help_file','r')
+		now = datetime.now()
+		f.writelines("***************\n")
+		f.writelines("[%s/%s/%s - %s:%s:%s] /help\n" % (now.day, now.month, now.year, now.hour, now.minute, now.second) )
+		f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second) + reply + "\n")
+		f.close
+		bot.send_file(mmessage.chat.id, f)
 
 	@bot.message_handler(commands=['progreso'])
 	def send_help(message):
