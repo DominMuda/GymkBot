@@ -100,7 +100,7 @@ def main():
 			f = open('log','a')
 			now = datetime.now()
 			f.writelines("***************\n")
-			f.writelines("[%s/%s/%s - %s:%s:%s] \n" % (now.day, now.month, now.year, now.hour, now.minute, now.second) + " El usuario "+ user + " ha enviado una foto." )
+			f.writelines("[%s/%s/%s - %s:%s:%s] \n" % (now.day, now.month, now.year, now.hour, now.minute, now.second) + " El usuario "+ user + " ha enviado una foto.\n" )
 			f.close
 
 			raw = m.photo[-1].file_id
@@ -120,7 +120,7 @@ def main():
 			f = open('log','a')
 			now = datetime.now()
 			f.writelines("***************\n")
-			f.writelines("[%s/%s/%s - %s:%s:%s] \n" % (now.day, now.month, now.year, now.hour, now.minute, now.second) + " El usuario "+ user + " ha enviado un audio." )
+			f.writelines("[%s/%s/%s - %s:%s:%s] \n" % (now.day, now.month, now.year, now.hour, now.minute, now.second) + " El usuario "+ user + " ha enviado un audio.\n" )
 			f.close
 
 			raw = m.voice.file_id
