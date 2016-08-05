@@ -61,13 +61,14 @@ def main():
 		tmp_list = ""
 		for x in range(0,10):
 			tmp_list += "\n - " + str(pruebas_disponibles[x])
-		f = open('help_file','r')
+		h = open('Reglas_de_la_Gymkana','r')
+		f = open('log', 'a')
 		now = datetime.now()
 		f.writelines("***************\n")
-		f.writelines("[%s/%s/%s - %s:%s:%s] /help\n" % (now.day, now.month, now.year, now.hour, now.minute, now.second) )
-		f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second) + reply + "\n")
+		f.writelines("[%s/%s/%s - %s:%s:%s] /reglas\n" % (now.day, now.month, now.year, now.hour, now.minute, now.second) )
+		f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second)+ message.chat.username + " ha solicitado las relgas.\n")
 		f.close
-		bot.send_file(mmessage.chat.id, f)
+		bot.send_document(message.chat.id, h)
 
 	@bot.message_handler(commands=['progreso'])
 	def send_help(message):
