@@ -83,7 +83,7 @@ def main():
 
 	@bot.message_handler(commands=['prueba1'])
 	def send_game1(message):
-		reply = "Me alegra que hayas empezado a jugar! La primera prueba es simple. Será : \n"
+		reply = "Me alegra que hayas empezado a jugar! La primera prueba es simple. Será que envies la imagen que quieras \n"
 		f = open('log','a')
 		now = datetime.now()
 		f.writelines("***************\n")
@@ -91,6 +91,25 @@ def main():
 		f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second) + reply + "\n")
 		f.close
 		bot.send_message(message.chat.id, reply)
+
+	@bot.message_handler(commands=['unlock'])
+	def send_progress(message):
+		index = message.text.split(' ')
+		print ("\n\n"+  message.text.lower() + str(len(index)) + "\n")
+		if not len(index) == 2 or not index[1].isnumeric() or int(index[1]) < 1 or int(index[1]) > 10:
+			reply = "No has introducido los datos correctamente"
+		else:
+			if message.chat.id == admin_id:
+				reply = ("Desbloqueando la prueba " + index[1] + ". \n")
+			else:
+				reply = "No tienes permiso para desbloquear las pruebas. \n"
+		f = open('log','a')
+		now = datetime.now()
+		f.writelines("***************\n")
+		f.writelines("[%s/%s/%s - %s:%s:%s] /unlock\n" % (now.day, now.month, now.year, now.hour, now.minute, now.second) )
+		f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second) + reply + "\n")
+		f.close
+		bot.reply_to(message, reply)
 
 	def send_admin(header, raw):
 		file_info = bot.get_file(raw)
@@ -133,7 +152,6 @@ def main():
 			f.close
 
 			send_admin("ogg", raw)
-
 
 	@bot.message_handler(func = lambda m: True)
 	def save_on_log(message):
