@@ -102,7 +102,7 @@ def main():
 			if message.chat.id == admin_id:
 				reply = ("Desbloqueando la prueba " + index[1] + ". \n")
 			else:
-				reply = "No tienes permiso para desbloquear las pruebas. \n"
+				reply = (message.chat.username + " ha intentado desbloquear las pruebas. \n"
 		f = open('log','a')
 		now = datetime.now()
 		f.writelines("***************\n")
