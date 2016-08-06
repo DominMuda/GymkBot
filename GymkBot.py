@@ -57,7 +57,7 @@ def main():
 		bot.send_message(message.chat.id, reply)
 
 	@bot.message_handler(commands=['reglas'])
-	def send_help(message):
+	def send_rules(message):
 		tmp_list = ""
 		for x in range(0,10):
 			tmp_list += "\n - " + str(pruebas_disponibles[x])
@@ -71,7 +71,7 @@ def main():
 		bot.send_document(message.chat.id, h)
 
 	@bot.message_handler(commands=['progreso'])
-	def send_help(message):
+	def send_progress(message):
 		reply = "De momento, no has cumplimentado ninguna prueba: \n"
 		f = open('log','a')
 		now = datetime.now()
@@ -82,7 +82,7 @@ def main():
 		bot.send_message(message.chat.id, reply)
 
 	@bot.message_handler(commands=['prueba1'])
-	def send_help(message):
+	def send_game1(message):
 		reply = "Me alegra que hayas empezado a jugar! La primera prueba es simple. Será : \n"
 		f = open('log','a')
 		now = datetime.now()
@@ -92,17 +92,15 @@ def main():
 		f.close
 		bot.send_message(message.chat.id, reply)
 
-	@bot.message_handler(commands=['progreso'])
-	def send_help(message):
-		reply = "De momento, no has cumplimentado ninguna prueba: \n"
-		f = open('log','a')
-		now = datetime.now()
-		f.writelines("***************\n")
-		f.writelines("[%s/%s/%s - %s:%s:%s] /start\n" % (now.day, now.month, now.year, now.hour, now.minute, now.second) )
-		f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second) + reply + "\n")
-		f.close
-		bot.send_message(message.chat.id, reply)
-
+	def send_admin(header, raw):
+		file_info = bot.get_file(raw)
+		downloaded_file = bot.download_file(file_info.file_path)
+		thing = io.BytesIO(downloaded_file)
+		thing.name = raw + header
+		if header == "png":
+			bot.send_photo(admin_id, thing)
+		elif header == "ogg":
+			bot.send_voice(admin_id, thing)
 
 	@bot.message_handler(content_types=['photo'])
 	def photo(*mensaje):
@@ -110,6 +108,7 @@ def main():
 			chat_id = m.chat.id
 			user = m.chat.username
 			nombreChat = m.chat.first_name
+			raw = m.photo[-1].file_id
 
 			f = open('log','a')
 			now = datetime.now()
@@ -117,12 +116,7 @@ def main():
 			f.writelines("[%s/%s/%s - %s:%s:%s] \n" % (now.day, now.month, now.year, now.hour, now.minute, now.second) + " El usuario "+ user + " ha enviado una foto.\n" )
 			f.close
 
-			raw = m.photo[-1].file_id
-			file_info = bot.get_file(raw)
-			downloaded_file = bot.download_file(file_info.file_path)
-			thing = io.BytesIO(downloaded_file)
-			thing.name = raw + "png"
-			bot.send_photo(admin_id, thing)
+			send_admin("png", raw )
 
 	@bot.message_handler(content_types=['voice'])
 	def audio(*mensaje):
@@ -130,6 +124,7 @@ def main():
 			chat_id = m.chat.id
 			user = m.chat.username
 			nombreChat = m.chat.first_name
+			raw = m.voice.file_id
 
 			f = open('log','a')
 			now = datetime.now()
@@ -137,14 +132,10 @@ def main():
 			f.writelines("[%s/%s/%s - %s:%s:%s] \n" % (now.day, now.month, now.year, now.hour, now.minute, now.second) + " El usuario "+ user + " ha enviado un audio.\n" )
 			f.close
 
-			raw = m.voice.file_id
-			file_info = bot.get_file(raw)
-			downloaded_file = bot.download_file(file_info.file_path)
-			thing = io.BytesIO(downloaded_file)
-			thing.name = raw + "ogg"
-			bot.send_voice(admin_id, thing)
+			send_admin("ogg", raw)
 
-	@bot.message_handler(func=lambda m: True)
+
+	@bot.message_handler(func = lambda m: True)
 	def save_on_log(message):
 		f = open('log','a')
 		now = datetime.now()
