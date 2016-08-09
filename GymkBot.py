@@ -5,7 +5,7 @@ import telebot, os.path
 import logging
 import configparser
 import io,sys
-import sqlite3
+import sqlite2
 
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',level=logging.INFO)
