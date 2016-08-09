@@ -4,7 +4,8 @@ from subprocess import call
 import telebot, os.path
 import logging
 import configparser
-import io
+import io,sys
+import sqlite3
 
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',level=logging.INFO)
@@ -13,7 +14,7 @@ logger.setLevel(logging.DEBUG)
 
 pruebas_disponibles = []
 bool_list = []
-for x in range(0,10):
+for x in range(0,40):
 	bool_list.insert(x,False)
 	pruebas_disponibles.insert(x, "/prueba" + str(x + 1))
 
@@ -23,16 +24,39 @@ config.read("config.ini")
 token = config['Bot']['token']
 admin_id = config['Admin']['chat_id']
 bot = telebot.TeleBot(token, skip_pending=True)
+dbName = config['DataBase']['db_name']
+
+def addUser(message, pruebas):
+	try:
+		deId = message.chat.id
+		username = message.chat.username
+		first_name = message.chat.first_name
+		pruebas = pruebas
+		h = c.execute('INSERT OR REPLACE INTO userTable (userId, userName, chatID, pruebas) VALUES(?, ?, ?, ?)', (chat_id, user_name, first_name, pruebas))
+	except:
+		print('Errors in addUser: ' + str(sys.exc_info()[0]))
+		return False
+	else:
+		return expenseID
 
 def create_DB():
-	self.conn = sqlite3.connect(dbName)
-	c = self.conn.cursor()
-	c.execute('CREATE TABLE IF NOT EXISTS userTable(userId INTEGER NOT NULL UNIQUE, userName TEXT NOT NULL, chatID TEXT)')
+	conn = sqlite3.connect(dbName)
+	c = conn.cursor()
+	c.execute('CREATE TABLE IF NOT EXISTS userTable(userId INTEGER NOT NULL UNIQUE, userName TEXT NOT NULL, firstName TEXT)')
+	conn.commit()
+	conn.close()
+	return c
 
 def main():
 
+	create_DB()
+
 	@bot.message_handler(commands=['start'])
 	def send_welcome(message):
+		pruebas = ''
+		for x in range (0,40):
+			pruebas += "0"
+		addUser(message, pruebas)
 		reply = "Bot para realizar una encuesta.\nPara conocer los detalles de cada prueba escribe /help"
 		f = open('log','a')
 		now = datetime.now()
@@ -102,7 +126,7 @@ def main():
 			if message.chat.id == admin_id:
 				reply = ("Desbloqueando la prueba " + index[1] + ". \n")
 			else:
-				reply = (message.chat.username + " ha intentado desbloquear las pruebas. \n"
+				reply = (message.chat.username + " ha intentado desbloquear las pruebas. \n")
 		f = open('log','a')
 		now = datetime.now()
 		f.writelines("***************\n")
