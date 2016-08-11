@@ -1,6 +1,6 @@
 /log
 /config.ini
-*.db
+/users.db
 /tokens
 *.ini
 *.log
