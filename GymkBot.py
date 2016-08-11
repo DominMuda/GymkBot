@@ -5,7 +5,7 @@ import telebot, os.path
 import logging
 import configparser
 import io,sys
-import sqlite2
+import sqlite3
 
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',level=logging.INFO)
@@ -25,27 +25,49 @@ token = config['Bot']['token']
 admin_id = config['Admin']['chat_id']
 bot = telebot.TeleBot(token, skip_pending=True)
 dbName = config['DataBase']['db_name']
+conn = sqlite3.connect(dbName)
 
-def addUser(message, pruebas):
+
+def addUser(message):
 	try:
+		print ('hello1\n')
+		conn = sqlite3.connect(dbName)
+		c = conn.cursor()
+		print ('hello2\n')
 		deId = message.chat.id
 		username = message.chat.username
 		first_name = message.chat.first_name
-		pruebas = pruebas
-		h = c.execute('INSERT OR REPLACE INTO userTable (userId, userName, chatID, pruebas) VALUES(?, ?, ?, ?)', (chat_id, user_name, first_name, pruebas))
+		print (str(deId)  + username + first_name)
+		c.execute('INSERT or REPLACE INTO userTable VALUES(?, ?, ?)', (str(deId), username, first_name))
+		print ('usuario introducido con exito\n')
+		conn.commit()
+		return True
 	except:
-		print('Errors in addUser: ' + str(sys.exc_info()[0]))
+		print('\nErrors in addUser: ' + str(sys.exc_info()[0]))
+		return False
+	else:
+		return expenseID
+
+def getUsers():
+	try:
+		conn = sqlite3.connect(dbName)
+		c = conn.cursor()
+		h = c.execute('SELECT userName FROM userTable')
+		conn.commit()
+		print ('hello\n')
+		return h
+	except:
+		print('\nErrors in getUsers: ' + str(sys.exc_info()[0]))
 		return False
 	else:
 		return expenseID
 
 def create_DB():
-	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
-	c.execute('CREATE TABLE IF NOT EXISTS userTable(userId INTEGER NOT NULL UNIQUE, userName TEXT NOT NULL, firstName TEXT)')
+	c.execute('CREATE TABLE IF NOT EXISTS userTable(userId TEXT NOT NULL UNIQUE, userName TEXT NOT NULL, firstName TEXT)')
 	conn.commit()
 	conn.close()
-	return c
+	return True
 
 def main():
 
@@ -55,8 +77,8 @@ def main():
 	def send_welcome(message):
 		pruebas = ''
 		for x in range (0,40):
-			pruebas += "0"
-		addUser(message, pruebas)
+	 		pruebas += "0"
+		addUser(message)
 		reply = "Bot para realizar una encuesta.\nPara conocer los detalles de cada prueba escribe /help"
 		f = open('log','a')
 		now = datetime.now()
@@ -80,6 +102,19 @@ def main():
 		f.close
 		bot.send_message(message.chat.id, reply)
 
+	@bot.message_handler(commands=['users'])
+	def send_rules(message):
+		h = getUsers()
+		f = open('log', 'a')
+		now = datetime.now()
+		f.writelines("***************\n")
+		f.writelines("[%s/%s/%s - %s:%s:%s] /reglas\n" % (now.day, now.month, now.year, now.hour, now.minute, now.second) )
+		f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second)+ message.chat.username + " ha solicitado las relgas.\n")
+		f.close
+		for row in h:
+			bot.send_message(message.chat.id, row)
+
+
 	@bot.message_handler(commands=['reglas'])
 	def send_rules(message):
 		tmp_list = ""
@@ -96,11 +131,11 @@ def main():
 
 	@bot.message_handler(commands=['progreso'])
 	def send_progress(message):
-		reply = "De momento, no has cumplimentado ninguna prueba: \n"
+		reply = "__ __ __ __ __ __ __ __\n"
 		f = open('log','a')
 		now = datetime.now()
 		f.writelines("***************\n")
-		f.writelines("[%s/%s/%s - %s:%s:%s] /start\n" % (now.day, now.month, now.year, now.hour, now.minute, now.second) )
+		f.writelines("[%s/%s/%s - %s:%s:%s] /progreso	\n" % (now.day, now.month, now.year, now.hour, now.minute, now.second) )
 		f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second) + reply + "\n")
 		f.close
 		bot.send_message(message.chat.id, reply)
@@ -181,7 +216,7 @@ def main():
 	def save_on_log(message):
 		f = open('log','a')
 		now = datetime.now()
-		f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second) + message.chat.username + " dijo: " + message.text + "\n")
+		f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second) + message.chat.first_name + " dijo: " + message.text + "\n")
 		f.close
 
 	bot.polling()
