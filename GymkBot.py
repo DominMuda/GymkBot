@@ -27,7 +27,6 @@ bot = telebot.TeleBot(token, skip_pending=True)
 dbName = config['DataBase']['db_name']
 conn = sqlite3.connect(dbName)
 
-
 def addUser(message):
 	try:
 		print ('hello1\n')
@@ -38,7 +37,7 @@ def addUser(message):
 		username = message.chat.username
 		first_name = message.chat.first_name
 		print (str(deId)  + username + first_name)
-		c.execute('INSERT or REPLACE INTO userTable VALUES(?, ?, ?)', (str(deId), username, first_name))
+		c.execute('INSERT INTO userTable VALUES(?, ?, ?)', (str(deId), username, first_name))
 		print ('usuario introducido con exito\n')
 		conn.commit()
 		return True
@@ -103,17 +102,21 @@ def main():
 		bot.send_message(message.chat.id, reply)
 
 	@bot.message_handler(commands=['users'])
-	def send_rules(message):
+	def send_users(message):
+		reply = ''
 		h = getUsers()
+		if str(message.chat.id) == admin_id:
+			for row in h:
+				reply+= (str(row) + '\n')
+		else:
+			reply+= 'No tienes permisos para pedir la lista de usuarios'
 		f = open('log', 'a')
 		now = datetime.now()
 		f.writelines("***************\n")
-		f.writelines("[%s/%s/%s - %s:%s:%s] /reglas\n" % (now.day, now.month, now.year, now.hour, now.minute, now.second) )
-		f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second)+ message.chat.username + " ha solicitado las relgas.\n")
+		f.writelines("[%s/%s/%s - %s:%s:%s] /users\n" % (now.day, now.month, now.year, now.hour, now.minute, now.second) )
+		f.writelines("[%s/%s/%s - %s:%s:%s] "  % (now.day, now.month, now.year, now.hour, now.minute, now.second)+ message.chat.username + " ha solicitado las la lista de usuarios.\n")
 		f.close
-		for row in h:
-			bot.send_message(message.chat.id, row)
-
+		bot.send_message(message.chat.id, reply)
 
 	@bot.message_handler(commands=['reglas'])
 	def send_rules(message):
